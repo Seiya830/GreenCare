@@ -3,10 +3,30 @@
     <img alt="植物の画像" />
     <h2>植物名: カクチペス</h2>
     <p>前回の水やり: 5月23日</p>
+    <p>前回のメモ:</p>
     <button>水やり完了</button><br />
-    <button>メモ追加</button>
+    <button @click="toggleMemoInput">メモ追加</button>
+    <div v-if="showMemoInput">
+      <textarea rows="4" cols="50"></textarea>
+      <button>保存</button>
+    </div>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      showMemoInput: false,
+    };
+  },
+  methods: {
+    toggleMemoInput() {
+      this.showMemoInput = !this.showMemoInput;
+    },
+  },
+};
+</script>
 
 <style lang="scss">
 .main-content {
