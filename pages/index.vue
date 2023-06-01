@@ -2,9 +2,10 @@
   <div class="main-content">
     <img alt="植物の画像" />
     <h2>植物名: カクチペス</h2>
-    <p>前回の水やり: 5月23日</p>
+    <p>前回の水やり: {{ lastWateredDate }}</p>
     <p>前回のメモ:</p>
-    <button>水やり完了</button><br />
+    <button @click="updateLastWateredDate">水やり完了</button>
+    <br />
     <button @click="toggleMemoInput">メモ追加</button>
     <div v-if="showMemoInput">
       <textarea rows="4" cols="50"></textarea>
@@ -18,11 +19,31 @@ export default {
   data() {
     return {
       showMemoInput: false,
+      lastWateredDate: "",
     };
   },
   methods: {
     toggleMemoInput() {
       this.showMemoInput = !this.showMemoInput;
+    },
+    updateLastWateredDate() {
+      const currentDate = new Date();
+      this.lastWateredDate = currentDate.toLocaleDateString();
+
+      fetch("/api/updateLastWateredDate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ lastWateredDate: this.lastWateredDate }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data.message);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
   },
 };
