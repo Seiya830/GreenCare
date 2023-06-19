@@ -9,3 +9,10 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model plants {
+  id                Int      @id @default(autoincrement())
+  plant_name        String
+  last_watered_date DateTime
+  last_memo         String?
+}
