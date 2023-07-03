@@ -1,6 +1,25 @@
 <template>
   <div class="container">
     <h1>Users</h1>
+    <form>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Name</label>
+        <input
+          v-model="user"
+          type="text"
+          class="form-control"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        @click.prevent="addUser(user)"
+      >
+        Add Name
+      </button>
+    </form>
     <table class="table">
       <thead>
         <tr>
@@ -28,12 +47,26 @@
 
 <script setup>
 const users = ref(null);
+const user = ref(null);
 users.value = await getUsers();
-console.log("users: ", users.value);
 
 // get users
 async function getUsers() {
   return await $fetch("/api/users");
+}
+
+// Add user
+async function addUser(user) {
+  let addedUser = null;
+  if (user)
+    addedUser = await $fetch("/api/users", {
+      method: "POST",
+      body: {
+        name: user,
+      },
+    });
+
+  if (addedUser) users.value = await getUsers();
 }
 
 useHead({
