@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <h1>Users</h1>
     <table class="table">
       <thead>
@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 const users = ref(null);
 users.value = await getUsers();
 console.log("users: ", users.value);
