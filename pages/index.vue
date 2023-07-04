@@ -2,6 +2,54 @@
   <div class="container">
     <h1>Users</h1>
 
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input
+              v-model="editedUser.name"
+              type="text"
+              class="form-control"
+              id="exampleInputName1"
+              aria-describedby="nameHelp"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="editUser(editedUser)"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div
       v-if="error"
       class="alert alert-danger alert-dismissible fade show"
@@ -49,7 +97,20 @@
           <th scope="row">{{ index + 1 }}</th>
           <td>{{ user.name }}</td>
           <td>
-            <button type="button" class="btn btn-warning btn-sm">Edit</button>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              @click="
+                {
+                  editedUser.id = user.id;
+                  editedUser.name = user.name;
+                }
+              "
+            >
+              Edit
+            </button>
           </td>
           <td>
             <button
@@ -71,6 +132,10 @@ import { H3Error } from "h3";
 const users = ref(null);
 const user = ref(null);
 const error = ref(null);
+const editedUser = ref({
+  id: null,
+  name: null,
+});
 
 users.value = await getUsers();
 
@@ -91,6 +156,22 @@ async function addUser(user) {
     });
 
   if (addedUser) users.value = await getUsers();
+}
+
+// Edit user
+async function editUser(editedUser) {
+  let user = null;
+
+  if (editedUser.id && editedUser.name)
+    user = await $fetch("/api/users", {
+      method: "PUT",
+      body: {
+        id: editedUser.id,
+        name: editedUser.name,
+      },
+    });
+
+  if (user) users.value = await getUsers();
 }
 
 // Delete user
