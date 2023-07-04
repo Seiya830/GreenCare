@@ -1,6 +1,21 @@
 <template>
   <div class="container">
     <h1>Users</h1>
+
+    <div
+      v-if="error"
+      class="alert alert-danger alert-dismissible fade show"
+      role="alert"
+    >
+      <strong>Error:</strong> Delete Error
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+        @click="error = null"
+      ></button>
+    </div>
     <form>
       <div class="mb-3">
         <label for="exampleInputName1" class="form-label">Name</label>
@@ -37,7 +52,13 @@
             <button type="button" class="btn btn-warning btn-sm">Edit</button>
           </td>
           <td>
-            <button type="button" class="btn btn-danger btn-sm">Edit</button>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              @click="deleteUser(user.id)"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
@@ -46,11 +67,14 @@
 </template>
 
 <script setup>
+import { H3Error } from "h3";
 const users = ref(null);
 const user = ref(null);
+const error = ref(null);
+
 users.value = await getUsers();
 
-// get users
+// Get users
 async function getUsers() {
   return await $fetch("/api/users");
 }
@@ -67,6 +91,25 @@ async function addUser(user) {
     });
 
   if (addedUser) users.value = await getUsers();
+}
+
+// Delete user
+async function deleteUser(id) {
+  let deleteUserOrError = null;
+  if (id)
+    deleteUserOrError = await $fetch("/api/users", {
+      method: "DELETE",
+      body: {
+        id: id,
+      },
+    });
+
+  if (deleteUserOrError instanceof H3Error) {
+    error.value = deleteUserOrError;
+    return;
+  }
+
+  users.value = await getUsers();
 }
 
 useHead({
