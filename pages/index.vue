@@ -124,6 +124,25 @@
         </tr>
       </tbody>
     </table>
+    <form>
+      <div class="mb-3">
+        <label for="exampleInputMemo1" class="form-label">Memo</label>
+        <textarea
+          v-model="user"
+          type="text"
+          class="form-control"
+          id="exampleInputMemo1"
+          aria-describedby="memoHelp"
+        />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        @click.prevent="addUser(user)"
+      >
+        Add Memo
+      </button>
+    </form>
   </div>
 </template>
 
