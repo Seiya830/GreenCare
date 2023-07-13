@@ -143,6 +143,47 @@
         Add Memo
       </button>
     </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Content</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(memo, index) in memos">
+          <th scope="row">{{ index + 1 }}</th>
+          <td>{{ memo.content }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-warning"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              @click="
+                {
+                  editedMemo.id = memo.id;
+                  editedMemo.content = memo.content;
+                }
+              "
+            >
+              Edit
+            </button>
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger btn-sm"
+              @click="deleteUser(memo.id)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -155,8 +196,11 @@ const editedUser = ref({
   id: null,
   name: null,
 });
+const memos = ref(null);
 
 users.value = await getUsers();
+memos.value = await getMemos();
+console.log("memos: ", memos.value);
 
 // Get users
 async function getUsers() {
@@ -212,8 +256,13 @@ async function deleteUser(id) {
   users.value = await getUsers();
 }
 
+// Get memos
+async function getMemos() {
+  return await $fetch("/api/memos");
+}
+
 useHead({
-  title: "Users Prisma Example",
+  title: "Green Care",
   link: {
     rel: "stylesheet",
     href: "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css",
