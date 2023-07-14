@@ -128,7 +128,7 @@
       <div class="mb-3">
         <label for="exampleInputMemo1" class="form-label">Memo</label>
         <textarea
-          v-model="user"
+          v-model="memo"
           type="text"
           class="form-control"
           id="exampleInputMemo1"
@@ -138,7 +138,7 @@
       <button
         type="submit"
         class="btn btn-primary"
-        @click.prevent="addUser(user)"
+        @click.prevent="addMemo(memo)"
       >
         Add Memo
       </button>
@@ -176,7 +176,7 @@
             <button
               type="button"
               class="btn btn-danger btn-sm"
-              @click="deleteUser(memo.id)"
+              @click="deleteMemo(memo.id)"
             >
               Delete
             </button>
@@ -196,11 +196,12 @@ const editedUser = ref({
   id: null,
   name: null,
 });
+
 const memos = ref(null);
+const memo = ref(null);
 
 users.value = await getUsers();
 memos.value = await getMemos();
-console.log("memos: ", memos.value);
 
 // Get users
 async function getUsers() {
@@ -259,6 +260,39 @@ async function deleteUser(id) {
 // Get memos
 async function getMemos() {
   return await $fetch("/api/memos");
+}
+
+// Add memos
+async function addMemo(memo) {
+  let addedMemo = null;
+  if (memo)
+    addedMemo = await $fetch("/api/memos", {
+      method: "POST",
+      body: {
+        content: memo,
+      },
+    });
+
+  if (addedMemo) memos.value = await getMemos();
+}
+
+// Delete memo
+async function deleteMemo(id) {
+  let deleteMemoOrError = null;
+  if (id)
+    deleteMemoOrError = await $fetch("/api/memos", {
+      method: "DELETE",
+      body: {
+        id: id,
+      },
+    });
+
+  if (deleteMemoOrError instanceof H3Error) {
+    error.value = deleteMemoOrError;
+    return;
+  }
+
+  memos.value = await getMemos();
 }
 
 useHead({
