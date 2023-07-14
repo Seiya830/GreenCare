@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   let error = null
 
   if(body.id)
-    memo = await prisma.memos.delete({
+    await prisma.memos.delete({
       where: {
         id: body.id,
       },
