@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Users</h1>
 
-    <!-- Modal -->
+    <!-- UsersModal -->
     <div
       class="modal fade"
       id="exampleModal"
@@ -41,6 +41,7 @@
             <button
               type="button"
               class="btn btn-primary"
+              data-bs-dismiss="modal"
               @click="editUser(editedUser)"
             >
               Save changes
@@ -124,6 +125,56 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- MemosModal -->
+    <div
+      class="modal fade"
+      id="exampleModal2"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel2"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel2">Edit User</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input
+              v-model="editedMemo.content"
+              type="text"
+              class="form-control"
+              id="exampleInputContent1"
+              aria-describedby="contentHelp"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="editMemo(editedMemo)"
+              data-bs-dismiss="modal"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <form>
       <div class="mb-3">
         <label for="exampleInputMemo1" class="form-label">Memo</label>
@@ -161,7 +212,7 @@
               type="button"
               class="btn btn-warning"
               data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
+              data-bs-target="#exampleModal2"
               @click="
                 {
                   editedMemo.id = memo.id;
@@ -199,6 +250,10 @@ const editedUser = ref({
 
 const memos = ref(null);
 const memo = ref(null);
+const editedMemo = ref({
+  id: null,
+  content: null,
+});
 
 users.value = await getUsers();
 memos.value = await getMemos();
@@ -274,6 +329,22 @@ async function addMemo(memo) {
     });
 
   if (addedMemo) memos.value = await getMemos();
+}
+
+// Edit memo
+async function editMemo(editedMemo) {
+  let memo = null;
+
+  if (editedMemo.id && editedMemo.content)
+    memo = await $fetch("/api/memos", {
+      method: "PUT",
+      body: {
+        id: editedMemo.id,
+        content: editedMemo.content,
+      },
+    });
+
+  if (memo) memos.value = await getMemos();
 }
 
 // Delete memo
