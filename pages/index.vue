@@ -251,10 +251,7 @@ const editedUser = ref({
 });
 
 const memos = ref(null);
-const memo = ref({
-  content: null,
-  date: null,
-});
+const memo = ref(null);
 const editedMemo = ref({
   id: null,
   content: null,
@@ -334,7 +331,6 @@ async function addMemo(memo) {
       method: "POST",
       body: {
         content: memo,
-        date: new Date().toISOString(),
       },
     });
 
