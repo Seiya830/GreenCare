@@ -201,6 +201,7 @@
           <th scope="col">Content</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
+          <th scope="col">Date</th>
         </tr>
       </thead>
       <tbody>
@@ -232,6 +233,7 @@
               Delete
             </button>
           </td>
+          <td>{{ memo.date }}</td>
         </tr>
       </tbody>
     </table>
@@ -249,7 +251,10 @@ const editedUser = ref({
 });
 
 const memos = ref(null);
-const memo = ref(null);
+const memo = ref({
+  content: null,
+  date: null,
+});
 const editedMemo = ref({
   id: null,
   content: null,
@@ -314,7 +319,11 @@ async function deleteUser(id) {
 
 // Get memos
 async function getMemos() {
-  return await $fetch("/api/memos");
+  const fetchedMemos = await $fetch("/api/memos");
+  return fetchedMemos.map((memo) => ({
+    ...memo,
+    date: new Date(memo.created_at).toLocaleDateString(),
+  }));
 }
 
 // Add memos
@@ -325,6 +334,7 @@ async function addMemo(memo) {
       method: "POST",
       body: {
         content: memo,
+        date: new Date().toISOString(),
       },
     });
 
