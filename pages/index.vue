@@ -89,14 +89,28 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Name</th>
+          <th scope="col">水やり</th>
+          <th scope="col">前回の水やり日</th>
           <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in users">
+        <tr v-for="(user, index) in users" :key="user.id">
           <th scope="row">{{ index + 1 }}</th>
           <td>{{ user.name }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-info"
+              @click="markAsWatered(user)"
+            >
+              Done
+            </button>
+          </td>
+          <td>
+            <p>{{ new Date(user.lastWatered_at).toLocaleDateString() }}</p>
+          </td>
           <td>
             <button
               type="button"
@@ -370,6 +384,23 @@ async function deleteMemo(id) {
   }
 
   memos.value = await getMemos();
+}
+
+//　前回の水やり日を更新する処理
+async function markAsWatered(user) {
+  const now = new Date().toISOString();
+  const updatedUser = await $fetch("/api/users", {
+    method: "PUT",
+    body: {
+      id: user.id,
+      name: user.name,
+      lastWatered_at: now,
+    },
+  });
+
+  if (updatedUser) {
+    users.value = await getUsers();
+  }
 }
 
 useHead({
