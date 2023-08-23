@@ -1,6 +1,8 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-export default defineNuxtConfig({
+export default {
   css: [
     '~/assets/scss/common.scss'
   ],
-})
+  serverMiddleware: [
+    { path: '/api', handler: '~/api/plants.js' },
+  ],
+};
