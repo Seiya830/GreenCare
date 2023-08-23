@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <h1>Users</h1>
+    <h1>GreenCare</h1>
 
-    <!-- UsersModal -->
+    <!-- PlantsModal -->
     <div
-      class="modal fade"
+      class="modal fade plants-modal"
       id="exampleModal"
       tabindex="-1"
       aria-labelledby="exampleModalLabel"
@@ -13,7 +13,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Edit Plant</h5>
             <button
               type="button"
               class="btn-close"
@@ -23,7 +23,7 @@
           </div>
           <div class="modal-body">
             <input
-              v-model="editedUser.name"
+              v-model="editedPlant.name"
               type="text"
               class="form-control"
               id="exampleInputName1"
@@ -40,9 +40,9 @@
             </button>
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-success"
               data-bs-dismiss="modal"
-              @click="editUser(editedUser)"
+              @click="editPlant(editedPlant)"
             >
               Save changes
             </button>
@@ -65,11 +65,12 @@
         @click="error = null"
       ></button>
     </div>
+
     <form>
       <div class="mb-3">
         <label for="exampleInputName1" class="form-label">Name</label>
         <input
-          v-model="user"
+          v-model="plant"
           type="text"
           class="form-control"
           id="exampleInputName1"
@@ -78,12 +79,13 @@
       </div>
       <button
         type="submit"
-        class="btn btn-primary"
-        @click.prevent="addUser(user)"
+        class="btn btn-success"
+        @click.prevent="addPlant(plant)"
       >
         Add Name
       </button>
     </form>
+
     <table class="table">
       <thead>
         <tr>
@@ -96,31 +98,34 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(user, index) in users" :key="user.id">
+        <tr v-for="(plant, index) in plants">
           <th scope="row">{{ index + 1 }}</th>
-          <td>{{ user.name }}</td>
+          <td>{{ plant.name }}</td>
           <td>
             <button
               type="button"
-              class="btn btn-info"
-              @click="markAsWatered(user)"
+              class="btn btn-info btn-sm"
+              @click="markAsWatered(plant)"
             >
               Done
             </button>
           </td>
           <td>
-            <p>{{ new Date(user.lastWatered_at).toLocaleDateString() }}</p>
+            <p v-if="plant.lastWatered_at">
+              {{ new Date(plant.lastWatered_at).toLocaleDateString() }}
+            </p>
+            <p v-else></p>
           </td>
           <td>
             <button
               type="button"
-              class="btn btn-warning"
+              class="btn btn-warning btn-sm"
               data-bs-toggle="modal"
               data-bs-target="#exampleModal"
               @click="
                 {
-                  editedUser.id = user.id;
-                  editedUser.name = user.name;
+                  editedPlant.id = plant.id;
+                  editedPlant.name = plant.name;
                 }
               "
             >
@@ -131,7 +136,7 @@
             <button
               type="button"
               class="btn btn-danger btn-sm"
-              @click="deleteUser(user.id)"
+              @click="deletePlant(plant.id)"
             >
               Delete
             </button>
@@ -151,7 +156,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel2">Edit User</h5>
+            <h5 class="modal-title" id="exampleModalLabel2">Edit Memo</h5>
             <button
               type="button"
               class="btn-close"
@@ -178,7 +183,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-success"
               @click="editMemo(editedMemo)"
               data-bs-dismiss="modal"
             >
@@ -202,12 +207,13 @@
       </div>
       <button
         type="submit"
-        class="btn btn-primary"
+        class="btn btn-success"
         @click.prevent="addMemo(memo)"
       >
         Add Memo
       </button>
     </form>
+
     <table class="table">
       <thead>
         <tr>
@@ -225,7 +231,7 @@
           <td>
             <button
               type="button"
-              class="btn btn-warning"
+              class="btn btn-warning btn-sm"
               data-bs-toggle="modal"
               data-bs-target="#exampleModal2"
               @click="
@@ -256,10 +262,10 @@
 
 <script setup>
 import { H3Error } from "h3";
-const users = ref(null);
-const user = ref(null);
+const plants = ref(null);
+const plant = ref(null);
 const error = ref(null);
-const editedUser = ref({
+const editedPlant = ref({
   id: null,
   name: null,
 });
@@ -271,61 +277,61 @@ const editedMemo = ref({
   content: null,
 });
 
-users.value = await getUsers();
+plants.value = await getPlants();
 memos.value = await getMemos();
 
-// Get users
-async function getUsers() {
-  return await $fetch("/api/users");
+// Get plants
+async function getPlants() {
+  return await $fetch("/api/plants");
 }
 
-// Add user
-async function addUser(user) {
-  let addedUser = null;
-  if (user)
-    addedUser = await $fetch("/api/users", {
+// Add plant
+async function addPlant(plant) {
+  let addedPlant = null;
+  if (plant)
+    addedPlant = await $fetch("/api/plants", {
       method: "POST",
       body: {
-        name: user,
+        name: plant,
       },
     });
 
-  if (addedUser) users.value = await getUsers();
+  if (addedPlant) plants.value = await getPlants();
 }
 
-// Edit user
-async function editUser(editedUser) {
-  let user = null;
+// Edit plant
+async function editPlant(editedPlant) {
+  let plant = null;
 
-  if (editedUser.id && editedUser.name)
-    user = await $fetch("/api/users", {
+  if (editedPlant.id && editedPlant.name)
+    plant = await $fetch("/api/plants", {
       method: "PUT",
       body: {
-        id: editedUser.id,
-        name: editedUser.name,
+        id: editedPlant.id,
+        name: editedPlant.name,
       },
     });
 
-  if (user) users.value = await getUsers();
+  if (plant) plants.value = await getPlants();
 }
 
-// Delete user
-async function deleteUser(id) {
-  let deleteUserOrError = null;
+// Delete plant
+async function deletePlant(id) {
+  let deletePlantOrError = null;
   if (id)
-    deleteUserOrError = await $fetch("/api/users", {
+    deletePlantOrError = await $fetch("/api/plants", {
       method: "DELETE",
       body: {
         id: id,
       },
     });
 
-  if (deleteUserOrError instanceof H3Error) {
-    error.value = deleteUserOrError;
+  if (deletePlantOrError instanceof H3Error) {
+    error.value = deletePlantOrError;
     return;
   }
 
-  users.value = await getUsers();
+  plants.value = await getPlants();
 }
 
 // Get memos
@@ -386,20 +392,19 @@ async function deleteMemo(id) {
   memos.value = await getMemos();
 }
 
-//　前回の水やり日を更新する処理
-async function markAsWatered(user) {
+async function markAsWatered(plant) {
   const now = new Date().toISOString();
-  const updatedUser = await $fetch("/api/users", {
+  const updatedPlant = await $fetch("/api/plants", {
     method: "PUT",
     body: {
-      id: user.id,
-      name: user.name,
+      id: plant.id,
+      name: plant.name,
       lastWatered_at: now,
     },
   });
 
-  if (updatedUser) {
-    users.value = await getUsers();
+  if (updatedPlant) {
+    plants.value = await getPlants();
   }
 }
 
