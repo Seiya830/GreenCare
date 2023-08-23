@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
+model plants {
   id    Int     @id @default(autoincrement())
   name  String?
   lastWatered_at DateTime?
